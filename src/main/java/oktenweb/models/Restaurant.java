@@ -20,10 +20,9 @@ import java.util.List;
 
 public class Restaurant extends User{
 
-
     String name;
     String address;
-    String restaurantEmail;
+    String email;
     String phoneNumber;
     String additionalInfo;
     int restaurantPositiveResponses;

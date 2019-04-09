@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface MenuSectionDAO extends JpaRepository<MenuSection, Integer>{
 
-    List<MenuSection> findByRestaurantName(String restaurantName);
+    List<MenuSection> findByRestaurantEmail(String restaurantEmail);
 }

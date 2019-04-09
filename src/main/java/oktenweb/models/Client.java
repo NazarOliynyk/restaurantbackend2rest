@@ -18,7 +18,7 @@ import java.util.List;
 @DiscriminatorValue("CLIENT")
 public class Client extends User{
 
-    String clientEmail;
+    String email;
     int clientPositiveResponses;
     int clientNegativeResponses;
 

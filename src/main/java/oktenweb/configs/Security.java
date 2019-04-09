@@ -63,7 +63,7 @@ public class Security extends WebSecurityConfigurerAdapter {
                 .and()
                 // We filter the api/login requests
                 .addFilterBefore(new RequestProcessingJWTFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new LoginFilter("/login", authenticationManager()), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new LoginFilter("/login", authenticationManager(), userDetailsService), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean
@@ -78,6 +78,8 @@ public class Security extends WebSecurityConfigurerAdapter {
                 HttpMethod.PUT.name(),
                 HttpMethod.DELETE.name()));
         configuration.addExposedHeader("Authorization");
+        configuration.addExposedHeader("UserClass");
+        configuration.addExposedHeader("UserLogged");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         // source.registerCorsConfiguration("/saveEvent", configuration);

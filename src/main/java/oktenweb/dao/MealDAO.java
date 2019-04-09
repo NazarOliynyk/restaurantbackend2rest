@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface MealDAO extends JpaRepository<Meal, Integer> {
 
-    List<Meal> findByRestaurantName(String restaurantName);
-    List<Meal> findByMenuSectionName(String restaurantName);
+    List<Meal> findByRestaurantEmail(String restaurantEmail);
+    List<Meal> findByMenuSectionName(String menuSectionName);
 }

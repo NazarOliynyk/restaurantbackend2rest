@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface AvatarDAO extends JpaRepository<Avatar, Integer>{
 
-    List<Avatar> findByRestaurantName(String restaurantName);
+    List<Avatar> findByRestaurantEmail(String restaurantEmail);
 }

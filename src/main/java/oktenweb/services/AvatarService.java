@@ -19,11 +19,12 @@ public class AvatarService {
     @Autowired
     AvatarDAO avatarDAO;
 
-    public List<Avatar> findByRestaurantName(Restaurant restaurant){
-        return avatarDAO.findByRestaurantName(restaurant.getName());
+    public List<Avatar> findByRestaurantEmail(Restaurant restaurant){
+        return avatarDAO.findByRestaurantEmail(restaurant.getEmail());
     }
 
-    public ResponseURL save(Restaurant restaurant, MultipartFile image){
+    public ResponseURL save
+            (Restaurant restaurant, MultipartFile image, String description){
 
         ResponseURL responseURL;
         String path =  "D:\\FotoSpringRestaurantBackEnd2Rest"+ File.separator
@@ -36,6 +37,7 @@ public class AvatarService {
         }
         Avatar avatar = new Avatar();
         avatar.setRestaurant(restaurant);
+        avatar.setDescription(description);
         avatar.setImage(image.getOriginalFilename());
         avatarDAO.save(avatar);
         responseURL = new ResponseURL("Image saved");

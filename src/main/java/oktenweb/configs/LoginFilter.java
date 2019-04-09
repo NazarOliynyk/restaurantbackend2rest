@@ -8,8 +8,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -22,9 +24,10 @@ import java.util.Date;
 
 public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
-    public LoginFilter(String url, AuthenticationManager authManager) {
+    public LoginFilter(String url, AuthenticationManager authManager, UserDetailsService userDetailsService) {
         super(new AntPathRequestMatcher(url));
         setAuthenticationManager(authManager);
+        this.userDetailsService = userDetailsService;
     }
 
 
@@ -37,6 +40,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 // and pass it on to TokenAuthenticationService, which will then add a JWT to the response.
 
     private User user;
+    private UserDetailsService userDetailsService;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException, IOException, ServletException {
@@ -82,6 +86,8 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
                 .compact();
         //and add it to header
         res.addHeader("Authorization", "Bearer " + jwtoken);
-
+        User userLogged= (User) userDetailsService.loadUserByUsername(auth.getName());
+        res.addHeader("UserClass", String.valueOf(userLogged.getClass()));
+        res.addHeader("UserLogged", new ObjectMapper().writeValueAsString(userLogged));
     }
 }
