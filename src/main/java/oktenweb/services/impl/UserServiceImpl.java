@@ -1,8 +1,7 @@
 package oktenweb.services.impl;
 
 import oktenweb.dao.UserDAO;
-import oktenweb.models.ResponseURL;
-import oktenweb.models.User;
+import oktenweb.models.*;
 import oktenweb.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,6 +9,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.bouncycastle.crypto.tls.ConnectionEnd.client;
@@ -23,48 +27,71 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public ResponseURL save(User user) {
-        ResponseURL responseURL ;
+    public String save(User user) {
+        String response = "";
         if (user.getUsername()!= null && user.getPassword()!= null) {
             if(!userDAO.existsByEmail(user.getEmail())) {
                 if (!userDAO.existsByUsername(user.getUsername())) {
                     System.out.println(user.toString());
                     user.setPassword(passwordEncoder.encode(user.getPassword()));
                     userDAO.save(user);
-                    responseURL = new ResponseURL("User has been saved");
+                    response = "User has been saved";
                 } else {
-                    responseURL = new ResponseURL("User with such login already exists!!");
+                    response = "User with such login already exists!!";
                 }
             }else {
-                responseURL = new ResponseURL("Field email is not unique!");
+                response = "Field email is not unique!";
             }
         }else {
-            responseURL = new ResponseURL("Set both fields: login and password!");
+            response = "Set both fields: login and password!";
         }
-        return responseURL;
+        return response;
     }
 
     @Override
+    public String deleteById(int id){
+
+        String path =
+                "D:\\FotoSpringRestaurantBackEnd2Rest"+ File.separator;
+
+        User user = userDAO.findOne(id);
+
+        if(user.getClass().equals(Client.class)){
+            userDAO.delete(id);
+            return "User deleted";
+        }else   {
+
+            Restaurant restaurant = (Restaurant) user;
+
+            List<Avatar> avatars = restaurant.getAvatars();
+
+            for (Avatar avatar : avatars) {
+
+                Path pathToFile =
+                        FileSystems.getDefault().getPath(path + avatar.getImage());
+                try {
+                    Files.delete(pathToFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return "Image was not deleted";
+                }
+            }
+            userDAO.delete(id);
+            return "User deleted";
+        }
+
+    }
+
+
+    @Override
     public List<User> findAll() {
-        return null;
+        return userDAO.findAll();
     }
 
     @Override
     public User findOneById(Integer id) {
-        return null;
+        return userDAO.findOne(id);
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     // beacause  UserService extends UserDetailsService

@@ -24,13 +24,14 @@ public class MailServiceImpl implements MailService {
     @Autowired
     Environment env;
 
-    public void send(String email, String message) {
+    public String send(String email, String message) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = null;
         try {
             helper = new MimeMessageHelper(mimeMessage, true);
         } catch (MessagingException e) {
             e.printStackTrace();
+            return String.valueOf(e);
         }
         try {
             mimeMessage.setFrom(new InternetAddress(env.getProperty("spring.mail.username")));
@@ -39,8 +40,9 @@ public class MailServiceImpl implements MailService {
             helper.setSubject("CONFIRMATION MESSAGE");
         } catch (MessagingException e) {
             e.printStackTrace();
+            return String.valueOf(e);
         }
         javaMailSender.send(mimeMessage);
-
+        return "Message was sent";
     }
 }

@@ -18,22 +18,30 @@ public class MenuSectionService {
         return menuSectionDAO.findByRestaurantEmail(restaurant.getEmail());
     }
 
-    public ResponseURL save(Restaurant restaurant, MenuSection menuSection){
+    public String saveMenuSection( MenuSection menuSection){
 
-        String response = "";
+//        String response = "";
+//        List<MenuSection> menuSections = restaurant.getMenuSections();
+//        for (MenuSection ms : menuSections) {
+//            if(ms.getName().equals(menuSection.getName())){
+//                response = "Such menu section already exists!";
+//                break;
+//            }else {
+//                menuSection.setRestaurant(restaurant);
+//
+//                response = "Menu section saved succesfully";
+//            }
+//        }
+        menuSectionDAO.save(menuSection);
+        return "Menu section saved succesfully";
+    }
+
+    public String deleteMenuSection(MenuSection menuSection){
+        Restaurant restaurant = menuSection.getRestaurant();
         List<MenuSection> menuSections = restaurant.getMenuSections();
-        for (MenuSection ms : menuSections) {
-            if(ms.getName().equals(menuSection.getName())){
-                response = "Such menu section already exists!";
-                break;
-            }else {
-                menuSection.setRestaurant(restaurant);
-                menuSectionDAO.save(menuSection);
-                response = "Menu section saved succesfully";
-            }
-
-        }
-
-        return new ResponseURL(response);
+        menuSections.remove(menuSection);
+        restaurant.setMenuSections(menuSections);
+         menuSectionDAO.delete(menuSection);
+        return "Menu Section was deleted";
     }
 }

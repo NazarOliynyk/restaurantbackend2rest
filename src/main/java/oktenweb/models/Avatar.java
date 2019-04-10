@@ -19,7 +19,6 @@ public class Avatar {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
     String image;
-    String description;
 
     @ManyToOne(cascade = CascadeType.DETACH,
             fetch = FetchType.LAZY)

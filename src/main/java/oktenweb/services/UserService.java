@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface UserService extends UserDetailsService {
 
-    ResponseURL save(User user);
+    String save(User user);
 
     // User findByUsername(String username);
 
@@ -16,4 +16,5 @@ public interface UserService extends UserDetailsService {
 
     User findOneById(Integer id);
 
+    String deleteById(int id);
 }

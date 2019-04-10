@@ -22,10 +22,13 @@ import java.util.Properties;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    // this mailSender and Environment might be commented
+     //this mailSender and Environment might be commented
+
+
+
 //        @Autowired
 //        Environment env;
-//
+
 //        @Bean
 //    public JavaMailSenderImpl javaMailSender(){
 //        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
