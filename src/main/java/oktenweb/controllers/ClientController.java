@@ -45,10 +45,10 @@ public class ClientController {
     }
 
     @CrossOrigin(origins = "*")
-    @DeleteMapping("/deleteOrder")
-    public String deleteOrder(@RequestBody OrderMeal orderMeal){
+    @DeleteMapping("/deleteOrder/{id}")
+    public String deleteOrder(@PathVariable int id){
 
-        return orderMealService.deleteOrderByClient(orderMeal);
+        return orderMealService.deleteOrderByClient(id);
     }
 
     @CrossOrigin(origins = "*")

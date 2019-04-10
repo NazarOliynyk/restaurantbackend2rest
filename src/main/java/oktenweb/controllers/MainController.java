@@ -71,28 +71,28 @@ public class MainController {
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping("/getMenuSections")
+    @PostMapping("/getMenuSections")
     public List<MenuSection> getMenuSections
             (@RequestBody Restaurant restaurant){
         return menuSectionService.findAllByRestaurantEmail(restaurant);
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping("/getMeals")
+    @PostMapping("/getMeals")
     public List<Meal> getMeals
             (@RequestBody Restaurant restaurant){
         return mealService.findAllByRestaurantEmail(restaurant);
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping("/getClientOrders")
+    @PostMapping("/getClientOrders")
     public List<OrderMeal> getClientOrders
             (@RequestBody Client client){
         return orderMealService.findAllByClientEmail(client);
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping("/getRestaurantOrders")
+    @PostMapping("/getRestaurantOrders")
     public List<OrderMeal> getRestaurantOrders
             (@RequestBody Restaurant restaurant){
         return orderMealService.findAllByRestaurantEmail(restaurant);

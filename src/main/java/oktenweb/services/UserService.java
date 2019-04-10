@@ -1,6 +1,6 @@
 package oktenweb.services;
 
-import oktenweb.models.ResponseURL;
+
 import oktenweb.models.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 

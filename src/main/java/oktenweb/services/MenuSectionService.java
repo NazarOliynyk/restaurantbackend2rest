@@ -2,7 +2,6 @@ package oktenweb.services;
 
 import oktenweb.dao.MenuSectionDAO;
 import oktenweb.models.MenuSection;
-import oktenweb.models.ResponseURL;
 import oktenweb.models.Restaurant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,23 +19,12 @@ public class MenuSectionService {
 
     public String saveMenuSection( MenuSection menuSection){
 
-//        String response = "";
-//        List<MenuSection> menuSections = restaurant.getMenuSections();
-//        for (MenuSection ms : menuSections) {
-//            if(ms.getName().equals(menuSection.getName())){
-//                response = "Such menu section already exists!";
-//                break;
-//            }else {
-//                menuSection.setRestaurant(restaurant);
-//
-//                response = "Menu section saved succesfully";
-//            }
-//        }
         menuSectionDAO.save(menuSection);
         return "Menu section saved succesfully";
     }
 
-    public String deleteMenuSection(MenuSection menuSection){
+    public String deleteMenuSection(int id){
+        MenuSection menuSection = menuSectionDAO.findOne(id);
         Restaurant restaurant = menuSection.getRestaurant();
         List<MenuSection> menuSections = restaurant.getMenuSections();
         menuSections.remove(menuSection);

@@ -55,7 +55,8 @@ public class OrderMealService {
         }
     }
 
-    public String deleteOrderByClient(OrderMeal orderMeal){
+    public String deleteOrderByClient(int id){
+        OrderMeal orderMeal = orderMealDAO.findOne(id);
         if(orderMeal.getOrderStatus().equals(OrderStatus.JUST_ORDERED)||
                 orderMeal.getOrderStatus().equals(OrderStatus.CANCELED_BY_RESTAURANT)){
 
@@ -69,7 +70,8 @@ public class OrderMealService {
         }
     }
 
-    public String deleteOrderByRestaurant(OrderMeal orderMeal){
+    public String deleteOrderByRestaurant(int id){
+        OrderMeal orderMeal = orderMealDAO.findOne(id);
         if(orderMeal.getOrderStatus().equals(OrderStatus.CANCELED_BY_CLIENT)){
 
             deleteOrderFromEverywhere(orderMeal);

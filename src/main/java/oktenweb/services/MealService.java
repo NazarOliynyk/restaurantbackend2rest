@@ -22,25 +22,14 @@ public class MealService {
     }
 
     public String saveMeal( Meal meal){
-//        String response = "";
-//        Restaurant restaurant = meal.getRestaurant();
-//        List<Meal> meals = restaurant.getMeals();
-//        for (Meal m : meals) {
-//            if(m.getName().equals(meal.getName())){
-//                response = "Such meal already exists!";
-//                break;
-//            }else {
-//                meal.setRestaurant(restaurant);
-//                meal.setMenuSection(menuSection);
-//
-//                response = "Meal saved successfully!";
-//            }
-//        }
+
         mealDAO.save(meal);
         return "Meal saved successfully!";
     }
 
-    public String deleteMeal(Meal meal){
+    public String deleteMeal(int id){
+
+        Meal meal = mealDAO.findOne(id);
         Restaurant restaurant = meal.getRestaurant();
         List<Meal> mealsOfRestaurant = restaurant.getMeals();
         mealsOfRestaurant.remove(meal);

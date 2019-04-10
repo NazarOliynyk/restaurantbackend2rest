@@ -22,7 +22,7 @@ public class Restaurant extends User{
 
     String name;
     String address;
-    String email;
+   // String email;
     String phoneNumber;
     String additionalInfo;
     int restaurantPositiveResponses;

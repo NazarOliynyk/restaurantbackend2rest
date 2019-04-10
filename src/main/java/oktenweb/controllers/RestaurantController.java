@@ -16,6 +16,7 @@ import java.util.List;
 
 @RestController
 public class RestaurantController {
+
     @Autowired
     UserServiceImpl userServiceImpl;
     @Autowired
@@ -47,10 +48,10 @@ public class RestaurantController {
     }
 
     @CrossOrigin(origins = "*")
-    @DeleteMapping("/deleteMenuSection")
-    public String deleteMenuSection(@RequestBody MenuSection menuSection){
+    @DeleteMapping("/deleteMenuSection/{id}")
+    public String deleteMenuSection(@PathVariable int id){
 
-        return menuSectionService.deleteMenuSection(menuSection);
+        return menuSectionService.deleteMenuSection(id);
     }
 
     @CrossOrigin(origins = "*")
@@ -61,20 +62,20 @@ public class RestaurantController {
     }
 
     @CrossOrigin(origins = "*")
-    @DeleteMapping("/deleteMeal")
-    public String deleteMeal(@RequestBody Meal meal){
+    @DeleteMapping("/deleteMeal/{id}")
+    public String deleteMeal(@PathVariable int id){
 
-        return mealService.deleteMeal(meal);
+        return mealService.deleteMeal(id);
     }
 
 
     @CrossOrigin(origins = "*")
     //@PostMapping("/saveAvatar- {xxx}")
     @PostMapping("/saveAvatar/{xxx}")
-    public String saveAvatar(@PathVariable("xxx") int restaurantId,
+    public String saveAvatar(@PathVariable("xxx") int id,
                              @RequestBody MultipartFile image){
 
-        return avatarService.saveAvatar(restaurantId, image);
+        return avatarService.saveAvatar(id, image);
     }
 
 
@@ -108,28 +109,28 @@ public class RestaurantController {
     }
 
     @CrossOrigin(origins = "*")
-    @DeleteMapping("/deleteOrderByRestaurant")
-    public String deleteOrderByRestaurant(OrderMeal orderMeal){
+    @DeleteMapping("/deleteOrderByRestaurant/{id]")
+    public String deleteOrderByRestaurant(@PathVariable("id") int id){
 
-        return orderMealService.deleteOrderByRestaurant(orderMeal);
+        return orderMealService.deleteOrderByRestaurant(id);
     }
 
     @CrossOrigin(origins = "*")
     @PostMapping("/negativeFromRestaurant/{id}")
     public String negativeFromRestaurant(@PathVariable("id") int id,
-                                     @RequestBody String descriptionFromClient){
+                                     @RequestBody String descriptionFromRestaurant){
 
         OrderMeal orderMeal = orderMealService.findById(id);
-        return orderMealService.negativeFromRestaurant(orderMeal, descriptionFromClient);
+        return orderMealService.negativeFromRestaurant(orderMeal, descriptionFromRestaurant);
     }
 
     @CrossOrigin(origins = "*")
     @PostMapping("/positiveFromRestaurant/{id}")
     public String positiveFromRestaurant(@PathVariable("id") int id,
-                                     @RequestBody String descriptionFromClient){
+                                     @RequestBody String descriptionFromRestaurant){
 
         OrderMeal orderMeal = orderMealService.findById(id);
-        return orderMealService.positiveFromRestaurant(orderMeal, descriptionFromClient);
+        return orderMealService.positiveFromRestaurant(orderMeal, descriptionFromRestaurant);
     }
 
 }
