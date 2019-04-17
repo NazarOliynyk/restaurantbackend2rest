@@ -87,6 +87,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
         //and add it to header
         res.addHeader("Authorization", "Bearer " + jwtoken);
         User userLogged= (User) userDetailsService.loadUserByUsername(auth.getName());
+        System.out.println(userLogged.toString());
         res.addHeader("UserClass", String.valueOf(userLogged.getClass()));
         res.addHeader("UserLogged", new ObjectMapper().writeValueAsString(userLogged));
     }

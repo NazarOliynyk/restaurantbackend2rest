@@ -1,6 +1,6 @@
 package oktenweb.models;
 
-public enum ResponseType {
+public enum TypeOfResponse {
     POSITIVE,
     NEUTRAL,
     NEGATIVE,

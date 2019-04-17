@@ -57,9 +57,9 @@ public class Security extends WebSecurityConfigurerAdapter {
                 .disable()
                 .authorizeRequests()
                 .antMatchers("/").permitAll() // by default method get
-                .antMatchers(HttpMethod.POST, "/login").permitAll()
-                .antMatchers("/get").authenticated()
-                //.anyRequest().authenticated()
+                .antMatchers(HttpMethod.POST, "/login", "/saveClient", "/saveRestaurant").permitAll()
+                //.antMatchers("/get").authenticated()
+                .anyRequest().authenticated()
                 .and()
                 // We filter the api/login requests
                 .addFilterBefore(new RequestProcessingJWTFilter(), UsernamePasswordAuthenticationFilter.class)

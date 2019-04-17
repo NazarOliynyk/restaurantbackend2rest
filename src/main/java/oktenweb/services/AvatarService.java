@@ -2,6 +2,7 @@ package oktenweb.services;
 
 import oktenweb.dao.AvatarDAO;
 import oktenweb.models.Avatar;
+import oktenweb.models.ResponseTransfer;
 import oktenweb.models.Restaurant;
 import oktenweb.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class AvatarService {
 
     private String path =  "D:\\FotoSpringRestaurantBackEnd2Rest"+ File.separator;
 
-    public String saveAvatar
+    public ResponseTransfer saveAvatar
             (int restaurantId, MultipartFile image){
 
 
@@ -37,18 +38,17 @@ public class AvatarService {
             image.transferTo(new File(path + image.getOriginalFilename()));
         } catch (IOException e) {
             e.printStackTrace();
-            return  "Failed to add an image";
+            return new ResponseTransfer("Failed to add an image");
         }
         Avatar avatar = new Avatar();
         Restaurant restaurant = (Restaurant) userServiceImpl.findOneById(restaurantId);
         avatar.setRestaurant(restaurant);
         avatar.setImage(image.getOriginalFilename());
         avatarDAO.save(avatar);
-
-        return "Image saved";
+        return new ResponseTransfer("Image saved");
     }
 
-    public String deleteAvatar(int id){
+    public ResponseTransfer deleteAvatar(int id){
         Avatar avatar = avatarDAO.findOne(id);
 
         Path pathToFile = FileSystems.getDefault().getPath(path + avatar.getImage());
@@ -56,7 +56,7 @@ public class AvatarService {
             Files.delete(pathToFile);
         } catch (IOException e) {
             e.printStackTrace();
-            return "Image was not deleted";
+            return new ResponseTransfer("Image was not deleted");
         }
 
         Restaurant restaurant = avatar.getRestaurant();
@@ -64,8 +64,7 @@ public class AvatarService {
         avatars.remove(avatar);
         restaurant.setAvatars(avatars);
         avatarDAO.delete(avatar);
-
-        return "Image was deleted";
+        return new ResponseTransfer("Image was deleted");
     }
 
 }

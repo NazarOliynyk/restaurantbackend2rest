@@ -21,13 +21,13 @@ public class MealService {
         return mealDAO.findByMenuSectionName(menuSection.getName());
     }
 
-    public String saveMeal( Meal meal){
+    public ResponseTransfer saveMeal( Meal meal){
 
         mealDAO.save(meal);
-        return "Meal saved successfully!";
+        return new ResponseTransfer("Meal saved successfully!");
     }
 
-    public String deleteMeal(int id){
+    public ResponseTransfer deleteMeal(int id){
 
         Meal meal = mealDAO.findOne(id);
         Restaurant restaurant = meal.getRestaurant();
@@ -47,7 +47,7 @@ public class MealService {
             order.setMeals(mealsOfOrder);
         }
         mealDAO.delete(meal);
-        return "Meal was deleted";
+        return new ResponseTransfer("Meal was deleted");
     }
 
 }

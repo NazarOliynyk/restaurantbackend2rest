@@ -30,10 +30,10 @@ public class OrderMeal implements Comparable<OrderMeal>{
     OrderStatus orderStatus;
 
     @Enumerated(EnumType.STRING)
-    ResponseType responseFromClient;
+    TypeOfResponse responseFromClient;
 
     @Enumerated(EnumType.STRING)
-    ResponseType responseFromRestaurant;
+    TypeOfResponse responseFromRestaurant;
     
     @ManyToOne(cascade = CascadeType.DETACH,
             fetch = FetchType.LAZY)

@@ -14,9 +14,8 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
-
-import static org.bouncycastle.crypto.tls.ConnectionEnd.client;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -27,29 +26,38 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public String save(User user) {
-        String response = "";
-        if (user.getUsername()!= null && user.getPassword()!= null) {
-            if(!userDAO.existsByEmail(user.getEmail())) {
-                if (!userDAO.existsByUsername(user.getUsername())) {
-                    System.out.println(user.toString());
-                    user.setPassword(passwordEncoder.encode(user.getPassword()));
-                    userDAO.save(user);
-                    response = "User has been saved";
-                } else {
-                    response = "User with such login already exists!!";
-                }
-            }else {
-                response = "Field email is not unique!";
-            }
+    public ResponseTransfer save(User user) {
+
+        if (userDAO.existsByUsername(user.getUsername())) {
+            return new ResponseTransfer("User with such login already exists!!");
+        } else if(userDAO.existsByEmail(user.getEmail())){
+            return new ResponseTransfer("Field email is not unique!");
         }else {
-            response = "Set both fields: login and password!";
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            userDAO.save(user);
+            return new ResponseTransfer("User has been saved successfully.");
         }
-        return response;
+    }
+
+    public ResponseTransfer update(User user) {
+        User userBeforeUpdate = userDAO.findOne(user.getId());
+        List<String> emails = new ArrayList<>();
+        List<User> users = userDAO.findAll();
+        for (User user1 : users) {
+            emails.add(user1.getEmail());
+        }
+        emails.remove(userBeforeUpdate.getEmail());
+         if(emails.contains(user.getEmail())){
+            return new ResponseTransfer("Field email is not unique!");
+        }else {
+
+            userDAO.save(user);
+            return new ResponseTransfer("User has been updated successfully.");
+        }
     }
 
     @Override
-    public String deleteById(int id){
+    public ResponseTransfer deleteById(int id){
 
         String path =
                 "D:\\FotoSpringRestaurantBackEnd2Rest"+ File.separator;
@@ -58,7 +66,7 @@ public class UserServiceImpl implements UserService {
 
         if(user.getClass().equals(Client.class)){
             userDAO.delete(id);
-            return "User deleted";
+            return new ResponseTransfer("User was deleted successfully");
         }else   {
 
             Restaurant restaurant = (Restaurant) user;
@@ -73,11 +81,11 @@ public class UserServiceImpl implements UserService {
                     Files.delete(pathToFile);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return "Image was not deleted";
+                    return new ResponseTransfer("Image was not deleted");
                 }
             }
             userDAO.delete(id);
-            return "User deleted";
+            return new ResponseTransfer("User was deleted successfully");
         }
 
     }

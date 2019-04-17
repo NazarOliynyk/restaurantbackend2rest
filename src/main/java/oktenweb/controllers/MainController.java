@@ -1,5 +1,7 @@
 package oktenweb.controllers;
 
+import lombok.AllArgsConstructor;
+import oktenweb.dao.UserDAO;
 import oktenweb.models.*;
 import oktenweb.services.MealService;
 import oktenweb.services.MenuSectionService;
@@ -31,15 +33,52 @@ public class MainController {
     OrderMealService orderMealService;
 
     @CrossOrigin(origins = "*")
-    @PostMapping("/saveUser")
-    public String saveUser(@RequestBody User user){
+    @PostMapping("/saveRestaurant")
+    public ResponseTransfer saveRestaurant(@RequestBody Restaurant restaurant){
+        ResponseTransfer response = userServiceImpl.save(restaurant);
+        System.out.println("Controller: "+response.getText());
+        return response;
+    }
 
-        return userServiceImpl.save(user);
+    @CrossOrigin(origins = "*")
+    @PostMapping("/saveClient")
+    public ResponseTransfer saveClient(@RequestBody Client client){
+        ResponseTransfer response = userServiceImpl.save(client);
+        System.out.println("Controller: "+response.getText());
+        return response;
+    }
+
+    @CrossOrigin(origins = "*")
+    @PostMapping("/updateRestaurant")
+    public ResponseTransfer updateRestaurant(@RequestBody Restaurant restaurant){
+
+        return userServiceImpl.update(restaurant);
+    }
+
+    @CrossOrigin(origins = "*")
+    @PostMapping("/updateClient")
+    public ResponseTransfer updateClient(@RequestBody Client client){
+
+        return userServiceImpl.update(client);
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/findRestaurant/{id}")
+    public Restaurant findRestaurant(@PathVariable("id") int id){
+        System.out.println("id: "+id);
+        return (Restaurant) userServiceImpl.findOneById(id);
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/findClient/{id}")
+    public Client findClient(@PathVariable("id") int id){
+
+        return (Client) userServiceImpl.findOneById(id);
     }
 
     @CrossOrigin(origins = "*")
     @DeleteMapping("/deleteUser/{id}")
-    public String deleteUser(@PathVariable int id) {
+    public ResponseTransfer deleteUser(@PathVariable("id") int id) {
 
         return userServiceImpl.deleteById(id);
     }
@@ -70,11 +109,20 @@ public class MainController {
         return clients;
     }
 
+//    @CrossOrigin(origins = "*")
+//    @PostMapping("/getMenuSections")
+//    public List<MenuSection> getMenuSections
+//            (@RequestBody Restaurant restaurant){
+//        return menuSectionService.findAllByRestaurantEmail(restaurant);
+//    }
+
     @CrossOrigin(origins = "*")
-    @PostMapping("/getMenuSections")
-    public List<MenuSection> getMenuSections
-            (@RequestBody Restaurant restaurant){
-        return menuSectionService.findAllByRestaurantEmail(restaurant);
+    @GetMapping("/getMenuSections/{id}")
+    public List<MenuSection>  getMenuSections
+            (@PathVariable("id") int id){
+        System.out.println("id: "+id);
+        //return new ResponseTransfer("Got to back");
+        return menuSectionService.findAllByRestaurantId(id);
     }
 
     @CrossOrigin(origins = "*")

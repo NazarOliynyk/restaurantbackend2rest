@@ -34,36 +34,31 @@ public class RestaurantController {
             "    <a href=\"http://localhost:4200\" target=\"_blank\"> Your order is in process now </a>\n" +
             "</div>";
 
-//    @PostMapping("/saveRestaurant")
-//    public String saveRestaurant(@RequestBody Restaurant restaurant) {
-//
-//        return userServiceImpl.save(restaurant);
-//    }
 
     @CrossOrigin(origins = "*")
     @PostMapping("/saveMenuSection")
-    public String saveMenuSection( @RequestBody MenuSection menuSection) {
+    public ResponseTransfer saveMenuSection( @RequestBody MenuSection menuSection) {
 
         return menuSectionService.saveMenuSection(menuSection);
     }
 
     @CrossOrigin(origins = "*")
     @DeleteMapping("/deleteMenuSection/{id}")
-    public String deleteMenuSection(@PathVariable int id){
+    public ResponseTransfer deleteMenuSection(@PathVariable int id){
 
         return menuSectionService.deleteMenuSection(id);
     }
 
     @CrossOrigin(origins = "*")
     @PostMapping("/saveMeal")
-    public String saveMeal( @RequestBody Meal meal) {
+    public ResponseTransfer saveMeal( @RequestBody Meal meal) {
 
         return mealService.saveMeal(meal);
     }
 
     @CrossOrigin(origins = "*")
     @DeleteMapping("/deleteMeal/{id}")
-    public String deleteMeal(@PathVariable int id){
+    public ResponseTransfer deleteMeal(@PathVariable int id){
 
         return mealService.deleteMeal(id);
     }
@@ -72,7 +67,7 @@ public class RestaurantController {
     @CrossOrigin(origins = "*")
     //@PostMapping("/saveAvatar- {xxx}")
     @PostMapping("/saveAvatar/{xxx}")
-    public String saveAvatar(@PathVariable("xxx") int id,
+    public ResponseTransfer saveAvatar(@PathVariable("xxx") int id,
                              @RequestBody MultipartFile image){
 
         return avatarService.saveAvatar(id, image);
@@ -81,28 +76,30 @@ public class RestaurantController {
 
     @CrossOrigin(origins = "*")
     @DeleteMapping("/deleteAvatar/{id}")
-    public String deleteAvatar(@PathVariable int id) {
+    public ResponseTransfer deleteAvatar(@PathVariable int id) {
 
         return avatarService.deleteAvatar(id);
     }
 
     @CrossOrigin(origins = "*")
     @PostMapping("/acceptOrderToKitchen")
-    public String acceptOrderToKitchen(@RequestBody OrderMeal orderMeal){
+    public ResponseTransfer acceptOrderToKitchen(@RequestBody OrderMeal orderMeal){
 
         String responseFromMailSender =
                 mailServiceImpl.send(orderMeal.getClient().getEmail(), orderAccepted);
         if(responseFromMailSender.equals("Message was sent")){
             orderMeal.setOrderStatus(OrderStatus.IN_PROCESS);
-            return orderMealService.saveOrder(orderMeal)+" and status changed";
+
+            return new ResponseTransfer
+                    (orderMealService.saveOrder(orderMeal).toString()+" and status changed");
         }else {
-            return  responseFromMailSender;
+            return new ResponseTransfer(responseFromMailSender);
         }
     }
 
     @CrossOrigin(origins = "*")
     @PostMapping("/cancelOrderByRestaurant/{id}")
-    public String cancelOrderByRestaurant(@PathVariable("id") int id,
+    public ResponseTransfer cancelOrderByRestaurant(@PathVariable("id") int id,
                                           @RequestBody String reasonOfCancelation){
 
         return orderMealService.cancelOrderByRestaurant(id, reasonOfCancelation);
@@ -110,14 +107,14 @@ public class RestaurantController {
 
     @CrossOrigin(origins = "*")
     @DeleteMapping("/deleteOrderByRestaurant/{id]")
-    public String deleteOrderByRestaurant(@PathVariable("id") int id){
+    public ResponseTransfer deleteOrderByRestaurant(@PathVariable("id") int id){
 
         return orderMealService.deleteOrderByRestaurant(id);
     }
 
     @CrossOrigin(origins = "*")
     @PostMapping("/negativeFromRestaurant/{id}")
-    public String negativeFromRestaurant(@PathVariable("id") int id,
+    public ResponseTransfer negativeFromRestaurant(@PathVariable("id") int id,
                                      @RequestBody String descriptionFromRestaurant){
 
         OrderMeal orderMeal = orderMealService.findById(id);
@@ -126,7 +123,7 @@ public class RestaurantController {
 
     @CrossOrigin(origins = "*")
     @PostMapping("/positiveFromRestaurant/{id}")
-    public String positiveFromRestaurant(@PathVariable("id") int id,
+    public ResponseTransfer positiveFromRestaurant(@PathVariable("id") int id,
                                      @RequestBody String descriptionFromRestaurant){
 
         OrderMeal orderMeal = orderMealService.findById(id);

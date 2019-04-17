@@ -1,6 +1,7 @@
 package oktenweb.services;
 
 
+import oktenweb.models.ResponseTransfer;
 import oktenweb.models.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 public interface UserService extends UserDetailsService {
 
-    String save(User user);
+    ResponseTransfer save(User user);
 
     // User findByUsername(String username);
 
@@ -16,5 +17,5 @@ public interface UserService extends UserDetailsService {
 
     User findOneById(Integer id);
 
-    String deleteById(int id);
+    ResponseTransfer deleteById(int id);
 }

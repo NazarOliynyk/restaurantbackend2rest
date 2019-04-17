@@ -3,7 +3,6 @@ package oktenweb.services;
 import oktenweb.dao.OrderMealDAO;
 import oktenweb.dao.UserDAO;
 import oktenweb.models.*;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,10 +24,10 @@ public class OrderMealService {
         return orderMealDAO.findByClientEmail(client.getEmail());
     }
 
-    public String saveOrder(OrderMeal orderMeal){
+    public ResponseTransfer saveOrder(OrderMeal orderMeal){
 
         orderMealDAO.save(orderMeal);
-        return "Order was saved successfully";
+        return new ResponseTransfer("Order was saved successfully");
     }
 
     public OrderMeal findById(int id){
@@ -55,7 +54,7 @@ public class OrderMealService {
         }
     }
 
-    public String deleteOrderByClient(int id){
+    public ResponseTransfer deleteOrderByClient(int id){
         OrderMeal orderMeal = orderMealDAO.findOne(id);
         if(orderMeal.getOrderStatus().equals(OrderStatus.JUST_ORDERED)||
                 orderMeal.getOrderStatus().equals(OrderStatus.CANCELED_BY_RESTAURANT)){
@@ -63,51 +62,53 @@ public class OrderMealService {
             deleteOrderFromEverywhere(orderMeal);
 
             orderMealDAO.delete(orderMeal);
-            return "Order was deleted";
+            return new ResponseTransfer("Order was deleted");
 
         }else {
-            return "Can not delete - your order is not just-ordered or canceled by the Restaurant";
+            return new ResponseTransfer
+                    ("Can not delete - your order is not just-ordered or canceled by the Restaurant");
+
         }
     }
 
-    public String deleteOrderByRestaurant(int id){
+    public ResponseTransfer deleteOrderByRestaurant(int id){
         OrderMeal orderMeal = orderMealDAO.findOne(id);
         if(orderMeal.getOrderStatus().equals(OrderStatus.CANCELED_BY_CLIENT)){
 
             deleteOrderFromEverywhere(orderMeal);
 
             orderMealDAO.delete(orderMeal);
-            return "Order was deleted";
+            return new ResponseTransfer("Order was deleted");
 
         }else {
-            return "Can not delete - your order is not canceled by the Client";
+            return new ResponseTransfer
+                    ("Can not delete - your order is not canceled by the Client");
+
         }
     }
 
-    public String cancelOrderByRestaurant(int id, String reasonOfCancelation){
+    public ResponseTransfer cancelOrderByRestaurant(int id, String reasonOfCancelation){
 
         OrderMeal orderMeal = orderMealDAO.findOne(id);
         orderMeal.setOrderStatus(OrderStatus.CANCELED_BY_RESTAURANT);
         orderMeal.setReasonOfCancelation(reasonOfCancelation);
         orderMealDAO.save(orderMeal);
-
-        return "Status was changed to Canceled by Restaurant";
+        return new ResponseTransfer("Status was changed to Canceled by Restaurant");
     }
 
-    public String cancelOrderByClient(int id, String reasonOfCancelation){
+    public ResponseTransfer cancelOrderByClient(int id, String reasonOfCancelation){
 
         OrderMeal orderMeal = orderMealDAO.findOne(id);
         orderMeal.setOrderStatus(OrderStatus.CANCELED_BY_CLIENT);
         orderMeal.setReasonOfCancelation(reasonOfCancelation);
         orderMealDAO.save(orderMeal);
-
-        return "Status was changed to Canceled by Client";
+        return new ResponseTransfer("Status was changed to Canceled by Client");
     }
 
-    public String confirmOrderServed(OrderMeal orderMeal){
+    public ResponseTransfer confirmOrderServed(OrderMeal orderMeal){
         orderMeal.setOrderStatus(OrderStatus.SERVED);
         orderMealDAO.save(orderMeal);
-        return "Order status - Served";
+        return new ResponseTransfer("Order status - Served");
     }
 
     public void recountClientResponses(OrderMeal order){
@@ -115,9 +116,9 @@ public class OrderMealService {
         List<OrderMeal> negative = new ArrayList<>();
         List<OrderMeal> positive = new ArrayList<>();
         for (OrderMeal ord: client.getOrders()) {
-            if(ord.getResponseFromRestaurant().equals(ResponseType.NEGATIVE)){
+            if(ord.getResponseFromRestaurant().equals(TypeOfResponse.NEGATIVE)){
                 negative.add(ord);
-            }else if(ord.getResponseFromRestaurant().equals(ResponseType.POSITIVE)){
+            }else if(ord.getResponseFromRestaurant().equals(TypeOfResponse.POSITIVE)){
                 positive.add(ord);}
         }
         client.setClientNegativeResponses(negative.size());
@@ -130,9 +131,9 @@ public class OrderMealService {
         List<OrderMeal> negative = new ArrayList<>();
         List<OrderMeal> positive = new ArrayList<>();
         for (OrderMeal ord: restaurant.getOrders()) {
-            if(ord.getResponseFromClient().equals(ResponseType.NEGATIVE)){
+            if(ord.getResponseFromClient().equals(TypeOfResponse.NEGATIVE)){
                 negative.add(ord);
-            }else if(ord.getResponseFromClient().equals(ResponseType.POSITIVE)) {
+            }else if(ord.getResponseFromClient().equals(TypeOfResponse.POSITIVE)) {
                 positive.add(ord);}
         }
         restaurant.setRestaurantNegativeResponses(negative.size());
@@ -140,54 +141,56 @@ public class OrderMealService {
         userDAO.save(restaurant);
     }
 
-    public String negativeFromClient(OrderMeal orderMeal, String descriptionFromClient){
+    public ResponseTransfer negativeFromClient(OrderMeal orderMeal, String descriptionFromClient){
         if(orderMeal.getOrderStatus().equals(OrderStatus.SERVED)||
                 orderMeal.getOrderStatus().equals(OrderStatus.IN_PROCESS)){
 
             orderMeal.setDescriptionFromClient(descriptionFromClient);
-            orderMeal.setResponseFromClient(ResponseType.NEGATIVE);
+            orderMeal.setResponseFromClient(TypeOfResponse.NEGATIVE);
             recountRestaurantResponses(orderMeal);
             orderMealDAO.save(orderMeal);
-            return "Response changed to negative";
+            return new ResponseTransfer("Response changed to negative");
+
         }else {
-            return "Can not change the RESPONSE to your order, change order status to SERVED";
+            return new ResponseTransfer("Can not change the RESPONSE to your order, change order status to SERVED");
         }
     }
 
-    public String positiveFromClient(OrderMeal orderMeal, String descriptionFromClient){
+    public ResponseTransfer positiveFromClient(OrderMeal orderMeal, String descriptionFromClient){
         if(orderMeal.getOrderStatus().equals(OrderStatus.SERVED)||
                 orderMeal.getOrderStatus().equals(OrderStatus.IN_PROCESS)){
 
             orderMeal.setDescriptionFromClient(descriptionFromClient);
-            orderMeal.setResponseFromClient(ResponseType.POSITIVE);
+            orderMeal.setResponseFromClient(TypeOfResponse.POSITIVE);
             recountRestaurantResponses(orderMeal);
             orderMealDAO.save(orderMeal);
-            return "Response changed to positive";
+            return new ResponseTransfer("Response changed to positive");
         }else {
-            return "Can not change the RESPONSE to your order, change order status to SERVED";
+            return new ResponseTransfer
+                    ("Can not change the RESPONSE to your order, change order status to SERVED");
         }
     }
 
-    public String negativeFromRestaurant(OrderMeal orderMeal, String descriptionFromRestaurant){
+    public ResponseTransfer negativeFromRestaurant(OrderMeal orderMeal, String descriptionFromRestaurant){
 //        if(orderMeal.getOrderStatus().equals(OrderStatus.SERVED)||
 //                orderMeal.getOrderStatus().equals(OrderStatus.SERVED))
 
         orderMeal.setDescriptionFromRestaurant(descriptionFromRestaurant);
-        orderMeal.setResponseFromRestaurant(ResponseType.NEGATIVE);
+        orderMeal.setResponseFromRestaurant(TypeOfResponse.NEGATIVE);
         recountClientResponses(orderMeal);
         orderMealDAO.save(orderMeal);
-        return "Response changed to negative";
+        return new ResponseTransfer("Response changed to negative");
     }
 
-    public String positiveFromRestaurant(OrderMeal orderMeal, String descriptionFromRestaurant){
+    public ResponseTransfer positiveFromRestaurant(OrderMeal orderMeal, String descriptionFromRestaurant){
 //        if(orderMeal.getOrderStatus().equals(OrderStatus.SERVED)||
 //                orderMeal.getOrderStatus().equals(OrderStatus.SERVED))
 
         orderMeal.setDescriptionFromRestaurant(descriptionFromRestaurant);
-        orderMeal.setResponseFromRestaurant(ResponseType.POSITIVE);
+        orderMeal.setResponseFromRestaurant(TypeOfResponse.POSITIVE);
         recountClientResponses(orderMeal);
         orderMealDAO.save(orderMeal);
-        return "Response changed to positive";
+        return new ResponseTransfer("Response changed to positive");
     }
 
 }
