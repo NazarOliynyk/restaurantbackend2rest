@@ -36,9 +36,11 @@ public class RestaurantController {
 
 
     @CrossOrigin(origins = "*")
-    @PostMapping("/saveMenuSection")
-    public ResponseTransfer saveMenuSection( @RequestBody MenuSection menuSection) {
-
+    @PostMapping("/saveMenuSection/{id}")
+    public ResponseTransfer saveMenuSection( @PathVariable("id") int id,
+                                            @RequestBody MenuSection menuSection) {
+        Restaurant restaurant = (Restaurant) userServiceImpl.findOneById(id);
+        menuSection.setRestaurant(restaurant);
         return menuSectionService.saveMenuSection(menuSection);
     }
 
@@ -68,9 +70,11 @@ public class RestaurantController {
     //@PostMapping("/saveAvatar- {xxx}")
     @PostMapping("/saveAvatar/{xxx}")
     public ResponseTransfer saveAvatar(@PathVariable("xxx") int id,
-                             @RequestBody MultipartFile image){
+                             @RequestParam("file") MultipartFile image){
+        System.out.println("id: "+id);
+        System.out.println("OriginalFilename: "+image.getOriginalFilename());
 
-        return avatarService.saveAvatar(id, image);
+         return avatarService.saveAvatar(id, image);
     }
 
 

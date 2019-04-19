@@ -3,20 +3,21 @@ package oktenweb.controllers;
 import lombok.AllArgsConstructor;
 import oktenweb.dao.UserDAO;
 import oktenweb.models.*;
+import oktenweb.services.AvatarService;
 import oktenweb.services.MealService;
 import oktenweb.services.MenuSectionService;
 import oktenweb.services.OrderMealService;
 import oktenweb.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.bouncycastle.crypto.tls.ConnectionEnd.client;
 
@@ -31,6 +32,8 @@ public class MainController {
     MealService mealService;
     @Autowired
     OrderMealService orderMealService;
+    @Autowired
+    AvatarService avatarService;
 
     @CrossOrigin(origins = "*")
     @PostMapping("/saveRestaurant")
@@ -109,19 +112,40 @@ public class MainController {
         return clients;
     }
 
-//    @CrossOrigin(origins = "*")
-//    @PostMapping("/getMenuSections")
-//    public List<MenuSection> getMenuSections
-//            (@RequestBody Restaurant restaurant){
-//        return menuSectionService.findAllByRestaurantEmail(restaurant);
-//    }
+    @CrossOrigin(origins = "*")
+    @GetMapping("/getFiles/{id}")
+    public List<File>  getFiles (@PathVariable("id") int id){
+        return avatarService.findFilesByRestaurantId(id);
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/getAvatars/{id}")
+    public List<Avatar>  getAvatars (@PathVariable("id") int id){
+        return avatarService.findByRestaurantId(id);
+    }
+
+    // the following method gives encoded base64 files
+    @CrossOrigin(origins = "*")
+    @GetMapping("/getImages/{id}")
+    public Map<String, String>  getImages
+            (@PathVariable("id") int id) throws IOException {
+        System.out.println("id: "+id);
+        Map<String, String> jsonMap = new HashMap<>();
+        List<File> files = avatarService.findFilesByRestaurantId(id);
+        for (File file : files) {
+            String encodeImage =
+                    Base64.getEncoder().withoutPadding().
+                            encodeToString(Files.readAllBytes(file.toPath()));
+            jsonMap.put("content", encodeImage);
+        }
+        return jsonMap;
+    }
 
     @CrossOrigin(origins = "*")
     @GetMapping("/getMenuSections/{id}")
     public List<MenuSection>  getMenuSections
             (@PathVariable("id") int id){
         System.out.println("id: "+id);
-        //return new ResponseTransfer("Got to back");
         return menuSectionService.findAllByRestaurantId(id);
     }
 

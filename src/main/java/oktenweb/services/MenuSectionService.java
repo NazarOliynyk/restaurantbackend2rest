@@ -4,6 +4,7 @@ import oktenweb.dao.MenuSectionDAO;
 import oktenweb.models.MenuSection;
 import oktenweb.models.ResponseTransfer;
 import oktenweb.models.Restaurant;
+import oktenweb.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,8 @@ import java.util.List;
 public class MenuSectionService {
     @Autowired
     MenuSectionDAO menuSectionDAO;
+    @Autowired
+    UserServiceImpl userServiceImpl;
 
     public List<MenuSection> findAllByRestaurantId(int id){
         return menuSectionDAO.findByRestaurantId(id);
@@ -30,6 +33,7 @@ public class MenuSectionService {
         List<MenuSection> menuSections = restaurant.getMenuSections();
         menuSections.remove(menuSection);
         restaurant.setMenuSections(menuSections);
+        //userServiceImpl.save(restaurant);
          menuSectionDAO.delete(menuSection);
         return new ResponseTransfer("Menu Section was deleted");
     }

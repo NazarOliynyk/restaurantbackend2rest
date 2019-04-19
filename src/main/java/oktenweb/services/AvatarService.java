@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,8 +25,20 @@ public class AvatarService {
     @Autowired
     UserServiceImpl userServiceImpl;
 
-    public List<Avatar> findByRestaurantEmail(Restaurant restaurant){
-        return avatarDAO.findByRestaurantEmail(restaurant.getEmail());
+    public List<Avatar> findByRestaurantId(int id){
+        return avatarDAO.findByRestaurantId(id);
+    }
+
+
+    public List<File> findFilesByRestaurantId(int id){
+        List<Avatar> avatars = avatarDAO.findByRestaurantId(id);
+        List<File> files = new ArrayList<>();
+        for (Avatar avatar : avatars) {
+            File file =  new File("/ava/"+avatar.getImage());
+            files.add( file);
+        }
+
+        return files;
     }
 
     private String path =  "D:\\FotoSpringRestaurantBackEnd2Rest"+ File.separator;
