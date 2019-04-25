@@ -24,6 +24,9 @@ import java.util.Date;
 
 public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
+    private User user;
+    private UserDetailsService userDetailsService;
+
     public LoginFilter(String url, AuthenticationManager authManager, UserDetailsService userDetailsService) {
         super(new AntPathRequestMatcher(url));
         setAuthenticationManager(authManager);
@@ -39,8 +42,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 // In this method we fetch the name from the authenticated user,
 // and pass it on to TokenAuthenticationService, which will then add a JWT to the response.
 
-    private User user;
-    private UserDetailsService userDetailsService;
+
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException, IOException, ServletException {
@@ -82,7 +84,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
                 .setSubject(auth.getName()) // this auth goes from the previous method
                 // returned from that method
                 .signWith(SignatureAlgorithm.HS512, "yes".getBytes())
-                .setExpiration(new Date(System.currentTimeMillis() + 200000))
+                .setExpiration(new Date(System.currentTimeMillis() + 600000))
                 .compact();
         //and add it to header
         res.addHeader("Authorization", "Bearer " + jwtoken);

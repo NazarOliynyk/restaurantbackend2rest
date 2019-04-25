@@ -7,6 +7,8 @@ import oktenweb.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class ClientController {
 
@@ -22,19 +24,36 @@ public class ClientController {
             "</div>";
 
 
+//    @CrossOrigin(origins = "*")
+//    @PostMapping("/saveOrder")
+//    public ResponseTransfer saveOrder(@RequestBody OrderMeal orderMeal){
+//        String responseFromMailSender =
+//                mailServiceImpl.send(orderMeal.getRestaurant().getEmail(), newOrder);
+//        if(responseFromMailSender.equals("Message was sent")){
+//            orderMeal.setResponseFromRestaurant(TypeOfResponse.NEUTRAL);
+//            orderMeal.setResponseFromClient(TypeOfResponse.NEUTRAL);
+//            orderMeal.setOrderStatus(OrderStatus.JUST_ORDERED);
+//            return orderMealService.saveOrder(orderMeal);
+//        }else {
+//            return new ResponseTransfer(responseFromMailSender);
+//        }
+//    }
+
     @CrossOrigin(origins = "*")
-    @PostMapping("/saveOrder")
-    public ResponseTransfer saveOrder(@RequestBody OrderMeal orderMeal){
-        String responseFromMailSender =
-                mailServiceImpl.send(orderMeal.getRestaurant().getEmail(), newOrder);
-        if(responseFromMailSender.equals("Message was sent")){
-            orderMeal.setResponseFromRestaurant(TypeOfResponse.NEUTRAL);
-            orderMeal.setResponseFromClient(TypeOfResponse.NEUTRAL);
-            orderMeal.setOrderStatus(OrderStatus.JUST_ORDERED);
-            return orderMealService.saveOrder(orderMeal);
-        }else {
-            return new ResponseTransfer(responseFromMailSender);
+    @PostMapping("/saveOrder/{id}")
+    public ResponseTransfer saveOrder(@PathVariable("id") int id,
+                                      @RequestBody List<Integer> ids){
+        System.out.println("/saveOrder/{id}: "+id);
+        for (Integer integer : ids) {
+            System.out.println("id of a meal: "+integer);
         }
+      //  String responseFromMailSender =
+        //        mailServiceImpl.send(orderMeal.getRestaurant().getEmail(), newOrder);
+       // if(responseFromMailSender.equals("Message was sent")){
+            return orderMealService.saveOrder(id, ids);
+       // }else {
+         //   return new ResponseTransfer(responseFromMailSender);
+       // }
     }
 
     @CrossOrigin(origins = "*")
@@ -42,6 +61,12 @@ public class ClientController {
     public ResponseTransfer deleteOrder(@PathVariable int id){
 
         return orderMealService.deleteOrderByClient(id);
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/getMealsOfOrder/{id}")
+    public List<Meal> getMealsOfOrder(@PathVariable int id){
+        return orderMealService.getMealsOfOrder(id);
     }
 
     @CrossOrigin(origins = "*")
@@ -53,10 +78,11 @@ public class ClientController {
     }
 
     @CrossOrigin(origins = "*")
-    @PostMapping("/confirmOrderServed")
-    public ResponseTransfer confirmOrderServed(OrderMeal orderMeal){
-
-        return orderMealService.confirmOrderServed(orderMeal);
+    @PostMapping("/confirmOrderServed/{id}")
+    public ResponseTransfer confirmOrderServed(@PathVariable("id") int id,
+                                               @RequestBody String s){
+        System.out.println(s);
+        return orderMealService.confirmOrderServed(id);
     }
 
     @CrossOrigin(origins = "*")

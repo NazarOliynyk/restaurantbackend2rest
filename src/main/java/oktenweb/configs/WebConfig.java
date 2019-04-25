@@ -51,7 +51,7 @@ public class WebConfig implements WebMvcConfigurer {
 
         String pathToFolder = "D:\\FotoSpringPreliminary1"+File.separator;
 
-//        this "/ava/**" is used in the form to display the foto
+//        this "/ava/**" is used in the form to display the photo
 
         resourceHandlerRegistry.addResourceHandler("/ava/**").addResourceLocations("file:///"+pathToFolder);
 
@@ -59,6 +59,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
+
+        registry.addViewController("/changePassword").setViewName("changePassword");
+        registry.addViewController("/restaurants").setViewName("restaurant");
 
     }
 

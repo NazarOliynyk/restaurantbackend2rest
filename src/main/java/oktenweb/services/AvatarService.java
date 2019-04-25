@@ -41,7 +41,10 @@ public class AvatarService {
         return files;
     }
 
-    private String path =  "D:\\FotoSpringRestaurantBackEnd2Rest"+ File.separator;
+//    private String path =  "D:\\FotoSpringRestaurantBackEnd2Rest"+ File.separator;
+    private String path =  "D:\\AngularProjects\\restaurantfrontend2\\src\\assets\\images"+ File.separator;
+
+   // file:///D:/AngularProjects/restaurantfrontend2/src/assets/images/
 
     public ResponseTransfer saveAvatar
             (int restaurantId, MultipartFile image){

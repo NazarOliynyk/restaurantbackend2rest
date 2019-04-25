@@ -66,6 +66,16 @@ public class MainController {
     }
 
     @CrossOrigin(origins = "*")
+    @PostMapping("/checkPassword/{id}")
+    public ResponseTransfer checkPassword(
+            @PathVariable("id") int id,
+            @RequestBody String password){
+
+        return userServiceImpl.checkPassword(id, password);
+    }
+
+
+    @CrossOrigin(origins = "*")
     @GetMapping("/findRestaurant/{id}")
     public Restaurant findRestaurant(@PathVariable("id") int id){
         System.out.println("id: "+id);
@@ -150,23 +160,24 @@ public class MainController {
     }
 
     @CrossOrigin(origins = "*")
-    @PostMapping("/getMeals")
+    @GetMapping("/getMeals/{id}")
     public List<Meal> getMeals
-            (@RequestBody Restaurant restaurant){
-        return mealService.findAllByRestaurantEmail(restaurant);
+            (@PathVariable("id") int id){
+        System.out.println("/getMeals/{id}: "+id);
+        return mealService.findAllByRestaurantId(id);
     }
 
     @CrossOrigin(origins = "*")
-    @PostMapping("/getClientOrders")
+    @GetMapping("/getClientOrders/{id}")
     public List<OrderMeal> getClientOrders
-            (@RequestBody Client client){
-        return orderMealService.findAllByClientEmail(client);
+            (@PathVariable("id") int id){
+        return orderMealService.findAllByClientId(id);
     }
 
     @CrossOrigin(origins = "*")
-    @PostMapping("/getRestaurantOrders")
+    @GetMapping("/getRestaurantOrders/{id}")
     public List<OrderMeal> getRestaurantOrders
-            (@RequestBody Restaurant restaurant){
-        return orderMealService.findAllByRestaurantEmail(restaurant);
+            (@PathVariable("id") int id){
+        return orderMealService.findAllByRestaurantId(id);
     }
 }

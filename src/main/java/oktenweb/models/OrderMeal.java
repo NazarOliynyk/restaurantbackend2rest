@@ -56,7 +56,7 @@ public class OrderMeal implements Comparable<OrderMeal>{
 
     @Override
     public int compareTo(OrderMeal o) {
-        return this.getOrderStatus().compareTo(o.getOrderStatus());
+        return this.getDate().compareTo(o.getDate());
     }
 }
 

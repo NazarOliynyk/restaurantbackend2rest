@@ -17,6 +17,10 @@ public class MealService {
         return mealDAO.findByRestaurantEmail(restaurant.getEmail());
     }
 
+    public List<Meal> findAllByRestaurantId(int id){
+        return mealDAO.findByRestaurantId(id);
+    }
+
     public List<Meal> findAllByMenuSectionName(MenuSection menuSection){
         return mealDAO.findByMenuSectionName(menuSection.getName());
     }
@@ -25,6 +29,10 @@ public class MealService {
 
         mealDAO.save(meal);
         return new ResponseTransfer("Meal saved successfully!");
+    }
+
+    public Meal findOne(int id){
+        return mealDAO.findOne(id);
     }
 
     public ResponseTransfer deleteMeal(int id){

@@ -27,6 +27,14 @@ public class MenuSectionService {
         return new ResponseTransfer("Menu section saved successfully");
     }
 
+    public MenuSection findById(int id){
+        return menuSectionDAO.findOne(id);
+    }
+
+    public MenuSection findByNameAndRestaurant(String name, Restaurant restaurant){
+        return menuSectionDAO.findByNameAndRestaurant(name, restaurant);
+    }
+
     public ResponseTransfer deleteMenuSection(int id){
         MenuSection menuSection = menuSectionDAO.findOne(id);
         Restaurant restaurant = menuSection.getRestaurant();

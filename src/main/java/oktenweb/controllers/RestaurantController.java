@@ -52,11 +52,28 @@ public class RestaurantController {
     }
 
     @CrossOrigin(origins = "*")
-    @PostMapping("/saveMeal")
-    public ResponseTransfer saveMeal( @RequestBody Meal meal) {
-
+    @PostMapping("/saveMeal/{id}")
+    public ResponseTransfer saveMeal( @PathVariable("id") int id,
+                                      @RequestBody Meal meal) {
+        Restaurant restaurant = (Restaurant) userServiceImpl.findOneById(id);
+        String name = meal.getMenuSection().getName();
+        MenuSection menuSection = menuSectionService.findByNameAndRestaurant(name, restaurant);
+        meal.setMenuSection(menuSection);
+        meal.setRestaurant(restaurant);
         return mealService.saveMeal(meal);
     }
+
+//    @CrossOrigin(origins = "*")
+//    @PostMapping("/updateMeal/{id}")
+//    public ResponseTransfer updateMeal( @PathVariable("id") int id,
+//                                      @RequestBody Meal meal) {
+//        Restaurant restaurant = (Restaurant) userServiceImpl.findOneById(id);
+//        String name = meal.getMenuSection().getName();
+//        MenuSection menuSection = menuSectionService.findByNameAndRestaurant(name, restaurant);
+//        meal.setMenuSection(menuSection);
+//        meal.setRestaurant(restaurant);
+//        return mealService.saveMeal(meal);
+//    }
 
     @CrossOrigin(origins = "*")
     @DeleteMapping("/deleteMeal/{id}")
@@ -85,20 +102,26 @@ public class RestaurantController {
         return avatarService.deleteAvatar(id);
     }
 
+//    @CrossOrigin(origins = "*")
+//    @PostMapping("/acceptOrderToKitchen")
+//    public ResponseTransfer acceptOrderToKitchen(@RequestBody OrderMeal orderMeal){
+//
+//        String responseFromMailSender =
+//                mailServiceImpl.send(orderMeal.getClient().getEmail(), orderAccepted);
+//        if(responseFromMailSender.equals("Message was sent")){
+//            orderMeal.setOrderStatus(OrderStatus.IN_PROCESS);
+//
+//            return new ResponseTransfer
+//                    (orderMealService.saveOrder(orderMeal).toString()+" and status changed");
+//        }else {
+//            return new ResponseTransfer(responseFromMailSender);
+//        }
+//    }
+
     @CrossOrigin(origins = "*")
-    @PostMapping("/acceptOrderToKitchen")
-    public ResponseTransfer acceptOrderToKitchen(@RequestBody OrderMeal orderMeal){
-
-        String responseFromMailSender =
-                mailServiceImpl.send(orderMeal.getClient().getEmail(), orderAccepted);
-        if(responseFromMailSender.equals("Message was sent")){
-            orderMeal.setOrderStatus(OrderStatus.IN_PROCESS);
-
-            return new ResponseTransfer
-                    (orderMealService.saveOrder(orderMeal).toString()+" and status changed");
-        }else {
-            return new ResponseTransfer(responseFromMailSender);
-        }
+    @GetMapping("/findClientByOrderId/{id}")
+    public Client findClientByOrderId(@PathVariable("id") int id){
+        return orderMealService.findClientByOrderId(id);
     }
 
     @CrossOrigin(origins = "*")
@@ -110,7 +133,7 @@ public class RestaurantController {
     }
 
     @CrossOrigin(origins = "*")
-    @DeleteMapping("/deleteOrderByRestaurant/{id]")
+    @DeleteMapping("/deleteOrderByRestaurant/{id}")
     public ResponseTransfer deleteOrderByRestaurant(@PathVariable("id") int id){
 
         return orderMealService.deleteOrderByRestaurant(id);

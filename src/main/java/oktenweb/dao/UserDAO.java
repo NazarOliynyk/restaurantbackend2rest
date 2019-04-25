@@ -1,5 +1,6 @@
 package oktenweb.dao;
 
+import oktenweb.models.Client;
 import oktenweb.models.User;
 import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.repository.JpaRepository;

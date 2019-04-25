@@ -56,6 +56,19 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    public ResponseTransfer checkPassword(int id, String password){
+        User user = userDAO.findOne(id);
+        System.out.println("user.getPassword(): "+user.getPassword());
+        System.out.println("passwordEncoder.encode(password)): "+passwordEncoder.encode(password));
+        System.out.printf("", passwordEncoder.matches(user.getPassword(), password));
+        System.out.println(user.getPassword().equals(passwordEncoder.encode(password)));
+        if(user.getPassword().equals(passwordEncoder.encode(password))){
+            return new ResponseTransfer("PASSWORD MATCHES");
+        }else {
+            return new ResponseTransfer("PASSWORD DOES NOT MATCH");
+        }
+    }
+
     @Override
     public ResponseTransfer deleteById(int id){
 

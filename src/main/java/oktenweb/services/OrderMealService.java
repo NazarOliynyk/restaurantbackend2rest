@@ -1,5 +1,6 @@
 package oktenweb.services;
 
+import oktenweb.dao.MealDAO;
 import oktenweb.dao.OrderMealDAO;
 import oktenweb.dao.UserDAO;
 import oktenweb.models.*;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -16,22 +18,53 @@ public class OrderMealService {
     OrderMealDAO orderMealDAO;
     @Autowired
     UserDAO userDAO;
+    @Autowired
+    MealDAO mealDao;
 
-    public List<OrderMeal> findAllByRestaurantEmail(Restaurant restaurant){
-        return orderMealDAO.findByRestaurantEmail(restaurant.getEmail());
+//    public List<OrderMeal> findAllByRestaurantEmail(Restaurant restaurant){
+//        return orderMealDAO.findByRestaurantEmail(restaurant.getEmail());
+//    }
+//    public List<OrderMeal> findAllByClientEmail(Client client){
+//        return orderMealDAO.findByClientEmail(client.getEmail());
+//    }
+    public List<OrderMeal> findAllByClientId(int id){
+        return orderMealDAO.findAllByClientId(id);
     }
-    public List<OrderMeal> findAllByClientEmail(Client client){
-        return orderMealDAO.findByClientEmail(client.getEmail());
+    public List<OrderMeal> findAllByRestaurantId(int id){
+        return orderMealDAO.findAllByRestaurantId(id);
     }
 
-    public ResponseTransfer saveOrder(OrderMeal orderMeal){
-
+    public ResponseTransfer saveOrder(int id, List<Integer> ids){
+        Client client = (Client) userDAO.findOne(id);
+        List<Meal> meals = new ArrayList<>();
+        for (Integer currentid : ids) {
+            Meal meal = mealDao.findOne(currentid);
+            meals.add(meal);
+        }
+        Restaurant restaurant = meals.get(0).getRestaurant();
+        OrderMeal orderMeal = new OrderMeal();
+        orderMeal.setMeals(meals);
+        orderMeal.setRestaurant(restaurant);
+        orderMeal.setClient(client);
+        orderMeal.setResponseFromRestaurant(TypeOfResponse.NEUTRAL);
+        orderMeal.setResponseFromClient(TypeOfResponse.NEUTRAL);
+        orderMeal.setOrderStatus(OrderStatus.JUST_ORDERED);
+        orderMeal.setDate(new Date());
         orderMealDAO.save(orderMeal);
         return new ResponseTransfer("Order was saved successfully");
     }
-
     public OrderMeal findById(int id){
         return orderMealDAO.findOne(id);
+    }
+
+    public List<Meal> getMealsOfOrder(int id){
+        OrderMeal orderMeal = orderMealDAO.findOne(id);
+        return orderMeal.getMeals();
+    }
+
+    public Client findClientByOrderId(int id){
+        OrderMeal orderMeal = orderMealDAO.findOne(id);
+        return orderMeal.getClient();
     }
 
     // this method is to reduce code in both: deleteOrderByClient and deleteOrderByRestaurant
@@ -99,19 +132,25 @@ public class OrderMealService {
     public ResponseTransfer cancelOrderByClient(int id, String reasonOfCancelation){
 
         OrderMeal orderMeal = orderMealDAO.findOne(id);
-        orderMeal.setOrderStatus(OrderStatus.CANCELED_BY_CLIENT);
-        orderMeal.setReasonOfCancelation(reasonOfCancelation);
-        orderMealDAO.save(orderMeal);
-        return new ResponseTransfer("Status was changed to Canceled by Client");
+        if(orderMeal.getOrderStatus().equals(OrderStatus.JUST_ORDERED)){
+            orderMeal.setOrderStatus(OrderStatus.CANCELED_BY_CLIENT);
+            orderMeal.setReasonOfCancelation(reasonOfCancelation);
+            orderMealDAO.save(orderMeal);
+            return new ResponseTransfer("Status was changed to Canceled by Client");
+        }else {
+            return new ResponseTransfer("This order is not Just Ordered. Can not cancel it");
+        }
+
     }
 
-    public ResponseTransfer confirmOrderServed(OrderMeal orderMeal){
+    public ResponseTransfer confirmOrderServed(int id){
+        OrderMeal orderMeal = orderMealDAO.findOne(id);
         orderMeal.setOrderStatus(OrderStatus.SERVED);
         orderMealDAO.save(orderMeal);
         return new ResponseTransfer("Order status - Served");
     }
 
-    public void recountClientResponses(OrderMeal order){
+    private void recountClientResponses(OrderMeal order){
         Client client = order.getClient();
         List<OrderMeal> negative = new ArrayList<>();
         List<OrderMeal> positive = new ArrayList<>();
@@ -126,7 +165,7 @@ public class OrderMealService {
         userDAO.save(client);
     }
 
-    public void recountRestaurantResponses(OrderMeal order){
+    private void recountRestaurantResponses(OrderMeal order){
         Restaurant restaurant = order.getRestaurant();
         List<OrderMeal> negative = new ArrayList<>();
         List<OrderMeal> positive = new ArrayList<>();

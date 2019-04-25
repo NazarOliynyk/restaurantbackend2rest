@@ -10,4 +10,5 @@ public interface MealDAO extends JpaRepository<Meal, Integer> {
 
     List<Meal> findByRestaurantEmail(String restaurantEmail);
     List<Meal> findByMenuSectionName(String menuSectionName);
+    List<Meal> findByRestaurantId(int id);
 }
