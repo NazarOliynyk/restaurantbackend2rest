@@ -66,6 +66,20 @@ public class MainController {
     }
 
     @CrossOrigin(origins = "*")
+    @PostMapping("/changePasswordRestaurant")
+    public ResponseTransfer changePasswordRestaurant(@RequestBody Restaurant restaurant){
+
+        return userServiceImpl.changePassword(restaurant);
+    }
+
+    @CrossOrigin(origins = "*")
+    @PostMapping("/changePasswordClient")
+    public ResponseTransfer changePasswordClient(@RequestBody Client client){
+
+        return userServiceImpl.changePassword(client);
+    }
+
+    @CrossOrigin(origins = "*")
     @PostMapping("/checkPassword/{id}")
     public ResponseTransfer checkPassword(
             @PathVariable("id") int id,
@@ -87,6 +101,13 @@ public class MainController {
     public Client findClient(@PathVariable("id") int id){
 
         return (Client) userServiceImpl.findOneById(id);
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/getLogins")
+    public List<User> getLogins(){
+
+        return userServiceImpl.getLogins();
     }
 
     @CrossOrigin(origins = "*")

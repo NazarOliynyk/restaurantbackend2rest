@@ -4,9 +4,11 @@ import oktenweb.dao.UserDAO;
 import oktenweb.models.*;
 import oktenweb.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -16,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -24,6 +27,8 @@ public class UserServiceImpl implements UserService {
     private UserDAO userDAO;
     @Autowired
     private PasswordEncoder passwordEncoder;
+//    @Autowired
+//    public UserDetailsManager userDetailsManager;
 
     @Override
     public ResponseTransfer save(User user) {
@@ -37,6 +42,12 @@ public class UserServiceImpl implements UserService {
             userDAO.save(user);
             return new ResponseTransfer("User has been saved successfully.");
         }
+    }
+
+    public ResponseTransfer changePassword(User user){
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userDAO.save(user);
+        return new ResponseTransfer("Password was changed successfully.");
     }
 
     public ResponseTransfer update(User user) {
@@ -57,12 +68,9 @@ public class UserServiceImpl implements UserService {
     }
 
     public ResponseTransfer checkPassword(int id, String password){
+
         User user = userDAO.findOne(id);
-        System.out.println("user.getPassword(): "+user.getPassword());
-        System.out.println("passwordEncoder.encode(password)): "+passwordEncoder.encode(password));
-        System.out.printf("", passwordEncoder.matches(user.getPassword(), password));
-        System.out.println(user.getPassword().equals(passwordEncoder.encode(password)));
-        if(user.getPassword().equals(passwordEncoder.encode(password))){
+        if(passwordEncoder.matches(password, user.getPassword())){
             return new ResponseTransfer("PASSWORD MATCHES");
         }else {
             return new ResponseTransfer("PASSWORD DOES NOT MATCH");
@@ -114,6 +122,21 @@ public class UserServiceImpl implements UserService {
         return userDAO.findOne(id);
     }
 
+//    @Override
+//    public User findByEmail(String email) {
+//        return userDAO.findByEmail(email);
+//    }
+    public List<User> getLogins(){
+        List<User> users = userDAO.findAll();
+        List<User> logins = new ArrayList<>();
+        for (User u: users) {
+            User user = new User();
+            user.setUsername(u.getUsername());
+            user.setEmail(u.getEmail());
+            logins.add(user);
+        }
+        return logins;
+    }
 
     // beacause  UserService extends UserDetailsService
     @Override

@@ -25,7 +25,7 @@ public class MealService {
         return mealDAO.findByMenuSectionName(menuSection.getName());
     }
 
-    public ResponseTransfer saveMeal( Meal meal){
+    public ResponseTransfer saveMeal( Meal meal) {
 
         mealDAO.save(meal);
         return new ResponseTransfer("Meal saved successfully!");

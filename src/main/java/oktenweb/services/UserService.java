@@ -11,8 +11,6 @@ public interface UserService extends UserDetailsService {
 
     ResponseTransfer save(User user);
 
-    // User findByUsername(String username);
-
     List<User> findAll();
 
     User findOneById(Integer id);
