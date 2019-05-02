@@ -31,7 +31,7 @@ public class RestaurantController {
     MailServiceImpl mailServiceImpl;
 
     private String orderAccepted = "<div>\n" +
-            "    <a href=\"http://localhost:4200\" target=\"_blank\"> Your order is in process now </a>\n" +
+            "    <a href=\"http://localhost:4200/clientOrder\" target=\"_blank\"> Your order is in process now </a>\n" +
             "</div>";
 
 
@@ -102,25 +102,27 @@ public class RestaurantController {
         return avatarService.deleteAvatar(id);
     }
 
-//    @CrossOrigin(origins = "*")
-//    @PostMapping("/acceptOrderToKitchen")
-//    public ResponseTransfer acceptOrderToKitchen(@RequestBody OrderMeal orderMeal){
-//
-//        String responseFromMailSender =
-//                mailServiceImpl.send(orderMeal.getClient().getEmail(), orderAccepted);
-//        if(responseFromMailSender.equals("Message was sent")){
-//            orderMeal.setOrderStatus(OrderStatus.IN_PROCESS);
-//
-//            return new ResponseTransfer
-//                    (orderMealService.saveOrder(orderMeal).toString()+" and status changed");
-//        }else {
-//            return new ResponseTransfer(responseFromMailSender);
-//        }
-//    }
+    @CrossOrigin(origins = "*")
+    @PostMapping("/acceptOrderToKitchen/{id}")
+    public ResponseTransfer acceptOrderToKitchen(@PathVariable("id") int id,
+                                                 @RequestBody int orderId){
+        System.out.println("acceptToKitchen: "+orderId);
+        OrderMeal orderMeal = orderMealService.findById(id);
+        String responseFromMailSender =
+                mailServiceImpl.send(orderMeal.getClient().getEmail(), orderAccepted);
+        if(responseFromMailSender.equals("Message was sent")){
+            orderMeal.setOrderStatus(OrderStatus.IN_PROCESS);
+
+            return orderMealService.acceptOrderToKitchen(orderMeal);
+        }else {
+            return new ResponseTransfer(responseFromMailSender);
+        }
+    }
 
     @CrossOrigin(origins = "*")
     @GetMapping("/findClientByOrderId/{id}")
-    public Client findClientByOrderId(@PathVariable("id") int id){
+    public Client findClientByOrderId(@PathVariable("id") int id) {
+
         return orderMealService.findClientByOrderId(id);
     }
 

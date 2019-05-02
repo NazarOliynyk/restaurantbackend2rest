@@ -1,7 +1,5 @@
 package oktenweb.services.impl;
 
-
-
 import oktenweb.services.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
@@ -17,6 +15,9 @@ import javax.mail.internet.MimeMessage;
 @Service
 @PropertySource("classpath:application.properties")
 public class MailServiceImpl implements MailService {
+
+    // the following ling must be applied for any new google account which is used for mail-sender
+    // https://myaccount.google.com/lesssecureapps?utm_source=google-account&utm_medium=web&hl=uk
 
     @Autowired
     private JavaMailSender javaMailSender;

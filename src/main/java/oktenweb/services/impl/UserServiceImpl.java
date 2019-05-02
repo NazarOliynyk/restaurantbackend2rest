@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,8 +28,8 @@ public class UserServiceImpl implements UserService {
     private UserDAO userDAO;
     @Autowired
     private PasswordEncoder passwordEncoder;
-//    @Autowired
-//    public UserDetailsManager userDetailsManager;
+    @Autowired
+    MailServiceImpl mailServiceImpl;
 
     @Override
     public ResponseTransfer save(User user) {
@@ -42,12 +43,6 @@ public class UserServiceImpl implements UserService {
             userDAO.save(user);
             return new ResponseTransfer("User has been saved successfully.");
         }
-    }
-
-    public ResponseTransfer changePassword(User user){
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userDAO.save(user);
-        return new ResponseTransfer("Password was changed successfully.");
     }
 
     public ResponseTransfer update(User user) {
@@ -67,21 +62,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public ResponseTransfer checkPassword(int id, String password){
-
-        User user = userDAO.findOne(id);
-        if(passwordEncoder.matches(password, user.getPassword())){
-            return new ResponseTransfer("PASSWORD MATCHES");
-        }else {
-            return new ResponseTransfer("PASSWORD DOES NOT MATCH");
-        }
-    }
-
     @Override
     public ResponseTransfer deleteById(int id){
 
         String path =
-                "D:\\FotoSpringRestaurantBackEnd2Rest"+ File.separator;
+                "D:\\AngularProjects\\restaurantfrontend2\\src\\assets\\images"+ File.separator;
 
         User user = userDAO.findOne(id);
 
@@ -122,15 +107,36 @@ public class UserServiceImpl implements UserService {
         return userDAO.findOne(id);
     }
 
-//    @Override
-//    public User findByEmail(String email) {
-//        return userDAO.findByEmail(email);
-//    }
+    // beacause  UserService extends UserDetailsService
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userDAO.findByUsername(username);
+    }
+
+    // the next few methods are for changing password and getting a new one:
+
+    public ResponseTransfer checkPassword(int id, String password){
+
+        User user = userDAO.findOne(id);
+        if(passwordEncoder.matches(password, user.getPassword())){
+            return new ResponseTransfer("PASSWORD MATCHES");
+        }else {
+            return new ResponseTransfer("PASSWORD DOES NOT MATCH");
+        }
+    }
+
+    public ResponseTransfer changePassword(User user){
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userDAO.save(user);
+        return new ResponseTransfer("Password was changed successfully.");
+    }
+
     public List<User> getLogins(){
         List<User> users = userDAO.findAll();
         List<User> logins = new ArrayList<>();
         for (User u: users) {
             User user = new User();
+            user.setId(u.getId());
             user.setUsername(u.getUsername());
             user.setEmail(u.getEmail());
             logins.add(user);
@@ -138,9 +144,51 @@ public class UserServiceImpl implements UserService {
         return logins;
     }
 
-    // beacause  UserService extends UserDetailsService
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userDAO.findByUsername(username);
+    // https://stackoverflow.com/questions/4044726/how-to-set-a-timer-in-java?noredirect=1&lq=1
+    // https://stackoverflow.com/questions/26311470/what-is-the-equivalent-of-javascript-settimeout-in-java
+    public void setTimeout(Runnable runnable, int delay){
+        new Thread(() -> {
+            try {
+                Thread.sleep(delay);
+                runnable.run();
+            }
+            catch (Exception e){
+                System.err.println(e);
+            }
+        }).start();
     }
+
+    private String randomPass;
+    private String emailPassChanged = "<div>\n" +
+            "    <a href=\"http://localhost:4200\" target=\"_blank\"> Your password was changed to: " +
+            "</a>" + "</div>";
+
+    public ResponseTransfer setRandomPass(int id){
+        User user = this.findOneById(id);
+        Random r = new Random ();
+        int random = r.nextInt(9999);
+        randomPass = String.valueOf(random);
+        user.setPassword(randomPass);
+        System.out.println(random);
+        System.out.println(randomPass);
+          String responseFromMailSender =
+                mailServiceImpl.send(user.getEmail(), emailPassChanged+randomPass);
+         if(responseFromMailSender.equals("Message was sent")){
+       return this.changePassword(user);
+         }else {
+           return new ResponseTransfer(responseFromMailSender);
+         }
+    }
+
+    public void setRandomPassIfNotChanged(int id){
+        User user = this.findOneById(id);
+        if(this.checkPassword(id, randomPass).getText().equals("PASSWORD MATCHES")){
+            Random r = new Random (1000);
+            int random = r.nextInt(9999);
+            randomPass = String.valueOf(random);
+            user.setPassword(randomPass);
+            this.changePassword(user);
+        }
+    }
+
 }

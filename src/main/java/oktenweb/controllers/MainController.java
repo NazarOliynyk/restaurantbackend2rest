@@ -1,7 +1,5 @@
 package oktenweb.controllers;
 
-import lombok.AllArgsConstructor;
-import oktenweb.dao.UserDAO;
 import oktenweb.models.*;
 import oktenweb.services.AvatarService;
 import oktenweb.services.MealService;
@@ -10,16 +8,10 @@ import oktenweb.services.OrderMealService;
 import oktenweb.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
-
-import static org.bouncycastle.crypto.tls.ConnectionEnd.client;
 
 @RestController
 public class MainController {
@@ -111,6 +103,20 @@ public class MainController {
     }
 
     @CrossOrigin(origins = "*")
+    @PostMapping("/forgotPassword/{id}")
+    public ResponseTransfer forgotPassword(@PathVariable("id") int id,
+                                           @RequestBody User u){
+        System.out.println("u.toString(): "+u.toString());
+
+        userServiceImpl.setTimeout(() ->{
+            System.out.println("Tymeout Works");
+                userServiceImpl.setRandomPassIfNotChanged(id);}, 60000);
+        return userServiceImpl.setRandomPass(id);
+
+
+    }
+
+    @CrossOrigin(origins = "*")
     @DeleteMapping("/deleteUser/{id}")
     public ResponseTransfer deleteUser(@PathVariable("id") int id) {
 
@@ -156,21 +162,21 @@ public class MainController {
     }
 
     // the following method gives encoded base64 files
-    @CrossOrigin(origins = "*")
-    @GetMapping("/getImages/{id}")
-    public Map<String, String>  getImages
-            (@PathVariable("id") int id) throws IOException {
-        System.out.println("id: "+id);
-        Map<String, String> jsonMap = new HashMap<>();
-        List<File> files = avatarService.findFilesByRestaurantId(id);
-        for (File file : files) {
-            String encodeImage =
-                    Base64.getEncoder().withoutPadding().
-                            encodeToString(Files.readAllBytes(file.toPath()));
-            jsonMap.put("content", encodeImage);
-        }
-        return jsonMap;
-    }
+//    @CrossOrigin(origins = "*")
+//    @GetMapping("/getImages/{id}")
+//    public Map<String, String>  getImages
+//            (@PathVariable("id") int id) throws IOException {
+//        System.out.println("id: "+id);
+//        Map<String, String> jsonMap = new HashMap<>();
+//        List<File> files = avatarService.findFilesByRestaurantId(id);
+//        for (File file : files) {
+//            String encodeImage =
+//                    Base64.getEncoder().withoutPadding().
+//                            encodeToString(Files.readAllBytes(file.toPath()));
+//            jsonMap.put("content", encodeImage);
+//        }
+//        return jsonMap;
+//    }
 
     @CrossOrigin(origins = "*")
     @GetMapping("/getMenuSections/{id}")

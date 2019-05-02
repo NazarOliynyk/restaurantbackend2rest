@@ -16,28 +16,8 @@ public class ClientController {
     UserServiceImpl userServiceImpl;
     @Autowired
     OrderMealService orderMealService;
-    @Autowired
-    MailServiceImpl mailServiceImpl;       
-
-    private String newOrder = "<div>\n" +
-            "    <a href=\"http://localhost:4200\" target=\"_blank\"> You have just got a new order </a>\n" +
-            "</div>";
 
 
-//    @CrossOrigin(origins = "*")
-//    @PostMapping("/saveOrder")
-//    public ResponseTransfer saveOrder(@RequestBody OrderMeal orderMeal){
-//        String responseFromMailSender =
-//                mailServiceImpl.send(orderMeal.getRestaurant().getEmail(), newOrder);
-//        if(responseFromMailSender.equals("Message was sent")){
-//            orderMeal.setResponseFromRestaurant(TypeOfResponse.NEUTRAL);
-//            orderMeal.setResponseFromClient(TypeOfResponse.NEUTRAL);
-//            orderMeal.setOrderStatus(OrderStatus.JUST_ORDERED);
-//            return orderMealService.saveOrder(orderMeal);
-//        }else {
-//            return new ResponseTransfer(responseFromMailSender);
-//        }
-//    }
 
     @CrossOrigin(origins = "*")
     @PostMapping("/saveOrder/{id}")
@@ -47,13 +27,7 @@ public class ClientController {
         for (Integer integer : ids) {
             System.out.println("id of a meal: "+integer);
         }
-      //  String responseFromMailSender =
-        //        mailServiceImpl.send(orderMeal.getRestaurant().getEmail(), newOrder);
-       // if(responseFromMailSender.equals("Message was sent")){
             return orderMealService.saveOrder(id, ids);
-       // }else {
-         //   return new ResponseTransfer(responseFromMailSender);
-       // }
     }
 
     @CrossOrigin(origins = "*")

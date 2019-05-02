@@ -4,6 +4,7 @@ import oktenweb.dao.MealDAO;
 import oktenweb.dao.OrderMealDAO;
 import oktenweb.dao.UserDAO;
 import oktenweb.models.*;
+import oktenweb.services.impl.MailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,13 +21,13 @@ public class OrderMealService {
     UserDAO userDAO;
     @Autowired
     MealDAO mealDao;
+    @Autowired
+    MailServiceImpl mailServiceImpl;
 
-//    public List<OrderMeal> findAllByRestaurantEmail(Restaurant restaurant){
-//        return orderMealDAO.findByRestaurantEmail(restaurant.getEmail());
-//    }
-//    public List<OrderMeal> findAllByClientEmail(Client client){
-//        return orderMealDAO.findByClientEmail(client.getEmail());
-//    }
+    private String newOrder = "<div>\n" +
+        "    <a href=\"http://localhost:4200/restaurantOrder\" target=\"_blank\"> You have just got a new order </a>\n" +
+        "</div>";
+
     public List<OrderMeal> findAllByClientId(int id){
         return orderMealDAO.findAllByClientId(id);
     }
@@ -42,6 +43,7 @@ public class OrderMealService {
             meals.add(meal);
         }
         Restaurant restaurant = meals.get(0).getRestaurant();
+
         OrderMeal orderMeal = new OrderMeal();
         orderMeal.setMeals(meals);
         orderMeal.setRestaurant(restaurant);
@@ -51,7 +53,18 @@ public class OrderMealService {
         orderMeal.setOrderStatus(OrderStatus.JUST_ORDERED);
         orderMeal.setDate(new Date());
         orderMealDAO.save(orderMeal);
-        return new ResponseTransfer("Order was saved successfully");
+        String responseFromMailSender =
+                mailServiceImpl.send(restaurant.getEmail(), newOrder);
+        if(responseFromMailSender.equals("Message was sent")){
+            return new ResponseTransfer("Order was saved successfully");
+        }else {
+            return new ResponseTransfer(responseFromMailSender);
+        }
+    }
+
+    public ResponseTransfer acceptOrderToKitchen(OrderMeal orderMeal){
+        orderMealDAO.save(orderMeal);
+        return new ResponseTransfer("Status was changed to IN_PROCESS");
     }
     public OrderMeal findById(int id){
         return orderMealDAO.findOne(id);
@@ -160,6 +173,8 @@ public class OrderMealService {
             }else if(ord.getResponseFromRestaurant().equals(TypeOfResponse.POSITIVE)){
                 positive.add(ord);}
         }
+        System.out.println("CLIENT negative.size(): "+negative.size());
+        System.out.println("CLIENT positive.size(): "+positive.size());
         client.setClientNegativeResponses(negative.size());
         client.setClientPositiveResponses(positive.size());
         userDAO.save(client);
@@ -175,6 +190,8 @@ public class OrderMealService {
             }else if(ord.getResponseFromClient().equals(TypeOfResponse.POSITIVE)) {
                 positive.add(ord);}
         }
+        System.out.println("RESTAURANT negative.size(): "+negative.size());
+        System.out.println("RESTAURANT positive.size(): "+positive.size());
         restaurant.setRestaurantNegativeResponses(negative.size());
         restaurant.setRestaurantPositiveResponses(positive.size());
         userDAO.save(restaurant);
