@@ -158,6 +158,8 @@ public class MainController {
     @CrossOrigin(origins = "*")
     @GetMapping("/getAvatars/{id}")
     public List<Avatar>  getAvatars (@PathVariable("id") int id){
+
+        System.out.println("/getAvatars/{id} works" + id);
         return avatarService.findByRestaurantId(id);
     }
 
