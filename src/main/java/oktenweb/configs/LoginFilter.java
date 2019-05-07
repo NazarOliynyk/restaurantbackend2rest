@@ -1,4 +1,5 @@
 package oktenweb.configs;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -11,8 +12,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -89,8 +88,9 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
         //and add it to header
         res.addHeader("Authorization", "Bearer " + jwtoken);
         User userLogged= (User) userDetailsService.loadUserByUsername(auth.getName());
-        System.out.println(userLogged.toString());
+//        System.out.println(userLogged.toString());
         res.addHeader("UserClass", String.valueOf(userLogged.getClass()));
+        //res.addHeader("UserClass", String.valueOf(userLogged.);
         res.addHeader("UserLogged", new ObjectMapper().writeValueAsString(userLogged));
     }
 }

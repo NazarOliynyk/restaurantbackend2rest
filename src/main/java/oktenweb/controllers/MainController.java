@@ -9,8 +9,6 @@ import oktenweb.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.*;
 
 @RestController
@@ -110,7 +108,7 @@ public class MainController {
 
         userServiceImpl.setTimeout(() ->{
             System.out.println("Tymeout Works");
-                userServiceImpl.setRandomPassIfNotChanged(id);}, 60000);
+                userServiceImpl.setRandomPassIfNotChanged(id);}, 90000);
         return userServiceImpl.setRandomPass(id);
 
 

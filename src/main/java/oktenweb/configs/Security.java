@@ -60,6 +60,7 @@ public class Security extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/login", "/saveClient", "/saveRestaurant", "/forgotPassword/{id}").permitAll()
                 .antMatchers(HttpMethod.GET,"/getLogins").permitAll()
                 .anyRequest().authenticated()
+                .antMatchers("/admin/**").hasRole("ADMIN")
                 .and()
                 // We filter the api/login requests
                 .addFilterBefore(new RequestProcessingJWTFilter(), UsernamePasswordAuthenticationFilter.class)

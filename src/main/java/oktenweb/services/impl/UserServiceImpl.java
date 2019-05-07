@@ -4,13 +4,10 @@ import oktenweb.dao.UserDAO;
 import oktenweb.models.*;
 import oktenweb.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -19,7 +16,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -165,7 +161,7 @@ public class UserServiceImpl implements UserService {
 
     public ResponseTransfer setRandomPass(int id){
         User user = this.findOneById(id);
-        Random r = new Random ();
+        Random r = new Random (1000);
         int random = r.nextInt(9999);
         randomPass = String.valueOf(random);
         user.setPassword(randomPass);
